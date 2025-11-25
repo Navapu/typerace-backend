@@ -53,7 +53,7 @@ export const register = async(req, res, next) => {
         });
 
         const refreshTokenHashed = await hashPassword(refreshToken);
-        newUser.refreshTokens.push({ token: refreshTokenHashed });
+        newUser.refreshTokens.push({ token: refreshTokenHashed, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) });
         
         await newUser.save();
 
@@ -110,7 +110,7 @@ export const login = async(req, res, next) => {
         });
 
         const refreshTokenHashed = await hashPassword(refreshToken);
-        user.refreshTokens.push({ token: refreshTokenHashed });
+        user.refreshTokens.push({ token: refreshTokenHashed, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) });
         await user.save();
 
         return res.status(200).json({

@@ -4,8 +4,8 @@ import {PORT, BACKEND_URL} from './config/config.js';
 import { connectDB } from './db/mongoose.js';
 import logger from './config/logger.js';
 import { notFoundHandler, errorMiddleware } from './middleware/error.middleware.js';
-import authRouter from './routes/auth.routes.js'
-
+import authRouter from './routes/auth.routes.js';
+import './workers/cleanupRefreshTokens.worker.js';
 const app = express();
 
 
@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 
 // Mount API routes
 app.use('/auth', authRouter);
+
 
 // ---------------------------
 // ERROR HANDLING / MANEJO DE ERRORES
