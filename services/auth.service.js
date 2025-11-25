@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { JWT_SECRET } from '../config/config.js';
+import { User } from '../db/models/index.js';
+import logger from '../config/logger.js';
 
 export const issueToken = (user) => {
     return jwt.sign({
@@ -9,10 +11,35 @@ export const issueToken = (user) => {
         role: user.role
     },
     JWT_SECRET,
-    {expiresIn: "15d"}
+    {expiresIn: "15m"}
     );
 };
 
+export const issueRefreshToken = (user) => {
+    return jwt.sign({
+        id: user.id,
+    },
+    JWT_SECRET,
+    {expiresIn: "30d"}
+    );
+}
+
+export const verifyToken = async(token) => {
+    try{
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        const user = await User.findById(decoded.id);
+
+        if(!user){
+            return null;
+        }
+        
+    return decoded;
+    }catch(error){
+        return null;
+    }
+
+}
 
 export const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);

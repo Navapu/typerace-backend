@@ -1,6 +1,6 @@
 import logger from '../config/logger.js';
 import { User } from '../db/models/index.js';
-import { hashPassword, issueToken, comparePassword } from '../services/auth.service.js';
+import { hashPassword, issueToken, comparePassword, issueRefreshToken, verifyToken } from '../services/auth.service.js';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -32,7 +32,6 @@ export const register = async(req, res, next) => {
             res.status(400);
             return next(new Error("password must be between 6 and 50 characters"));
         }
-
         const hashedPassword = await hashPassword(password);
         const newUser = await User.create({
             email,
@@ -40,18 +39,33 @@ export const register = async(req, res, next) => {
             password: hashedPassword,
             role: "user"
         });
+
         const token = issueToken({
             id: newUser._id,
             email: newUser.email,
             role: newUser.role
         });
+
+        const refreshToken = issueRefreshToken({
+            id: newUser._id,
+            email: newUser.email,
+            role: newUser.role
+        });
+
+        const refreshTokenHashed = await hashPassword(refreshToken);
+        newUser.refreshTokens.push({ token: refreshTokenHashed });
+        
+        await newUser.save();
+
+
         return res.status(200).json({
             msg: 'Registered user',
             data: {
                 id: newUser._id,
                 email: newUser.email,
                 username: newUser.username,
-                token
+                token,
+                refreshToken
             },
             error: false
         })
@@ -89,18 +103,81 @@ export const login = async(req, res, next) => {
             role: user.role
         })
 
+        const refreshToken = issueRefreshToken({
+            id: user._id,
+            email: user.email,
+            role: user.role
+        });
+
+        const refreshTokenHashed = await hashPassword(refreshToken);
+        user.refreshTokens.push({ token: refreshTokenHashed });
+        await user.save();
+
         return res.status(200).json({
             msg: 'Correct login',
             data: {
                 id: user._id,
                 email: user.email,
                 username: user.username,
-                token
+                token,
+                refreshToken
             },
             error: false
         });
     }catch(error){
         logger.error(error, "login error: ")
+        next(error);
+    }
+}
+
+export const refreshAccessToken = async(req, res, next) => {
+    try{
+        const { refreshToken } = req.body;
+
+        if(!refreshToken){
+            res.status(401);
+            return next(new Error("refresh token required"));
+        }
+
+        const decoded = await verifyToken(refreshToken);
+
+        if (!decoded){
+            res.status(401);
+            return next(new Error("refresh token invalid"));
+        }
+
+
+        const user = await User.findById(decoded.id);
+        
+        if (!user) {
+            res.status(403);
+            return next(new Error("invalid refresh token"));
+        }
+        const valid = await Promise.any(
+            user.refreshTokens.map(rt => comparePassword(refreshToken, rt.token))
+        );
+
+        if (!valid){
+            res.status(403);
+            return next(new Error("invalid refresh token"));
+        }
+        const newAccessToken = issueToken({
+            id: user._id,
+            email: user.email,
+            role: user.role
+        });
+
+        
+        return res.json({
+            msg: "Token refreshed",
+            data: {
+                accessToken: newAccessToken
+            },
+            error: false
+        });
+
+    }catch(error){
+        logger.error(error, "refreshAcessToken error: ")
         next(error);
     }
 }

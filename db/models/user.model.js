@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    refreshTokens: {
+        type: [{
+          token: {type: String}
+        }],
+        default: []
+    },
     totalGames: {
         type: Number,
         default: 0
