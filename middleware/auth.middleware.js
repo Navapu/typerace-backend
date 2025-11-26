@@ -13,7 +13,7 @@
 import { verifyToken } from "../services/auth.service.js";
 import { User } from "../db/models/index.js";
 import logger from "../config/logger.js";
-export const authMiddleware = async (req, res, next) => {
+export const auth = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {

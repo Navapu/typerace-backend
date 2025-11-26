@@ -6,7 +6,8 @@ import { connectDB } from './db/mongoose.js';
 import logger from './config/logger.js';
 import { notFoundHandler, errorMiddleware } from './middleware/error.middleware.js';
 import authRouter from './routes/auth.routes.js';
-import textRouter from './routes/text.routes.js'
+import textRouter from './routes/text.routes.js';
+import gameRouter from './routes/game.routes.js'
 import './workers/cleanupRefreshTokens.worker.js';
 import {addcleanupQueue} from './queues/cleanupRefreshTokens.queue.js';
 const app = express();
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use('/auth', authRouter);
 app.use('/texts', textRouter);
+app.use('/games', gameRouter);
 
 // ---------------------------
 // ERROR HANDLING / MANEJO DE ERRORES

@@ -53,7 +53,6 @@ export const getRandomText = async(req, res, next) => {
         }
         
         const randomText = Math.floor(Math.random() * texts.length);
-        logger.info(randomText);
 
         return res.status(200).json({
             msg: "Random Text obtained",
