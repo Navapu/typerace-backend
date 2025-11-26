@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import cron from 'node-cron';
 import {PORT, BACKEND_URL} from './config/config.js';
 import { connectDB } from './db/mongoose.js';
 import logger from './config/logger.js';
 import { notFoundHandler, errorMiddleware } from './middleware/error.middleware.js';
 import authRouter from './routes/auth.routes.js';
 import './workers/cleanupRefreshTokens.worker.js';
+import {addcleanupQueue} from './queues/cleanupRefreshTokens.queue.js';
 const app = express();
 
 
@@ -39,3 +41,12 @@ app.use(errorMiddleware);
 app.listen(PORT, () => {
     logger.info(`Server running at: ${BACKEND_URL}${PORT}`)
 })
+
+
+// ---------------------------
+// CRON JOBS / TAREAS PROGRAMADAS
+// ---------------------------
+cron.schedule("0 0 * * *", async () => {
+  logger.info("⏰ Ejecutando chequeo de suscripciones expiradas...");
+  await addcleanupQueue();
+});

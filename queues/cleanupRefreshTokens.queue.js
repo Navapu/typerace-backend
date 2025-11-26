@@ -14,7 +14,8 @@ export const cleanupQueue  = new Queue('cleanup-tokens', {
     }
 })
 
-cleanupQueue.add('remove-expired-tokens', {}, {
-    repeat: { cron: '0 0 * * *' },
-    jobId: 'remove-expired-tokens-job'
-});
+export const addcleanupQueue = async () => {
+    await cleanupQueue.add('remove-expired-tokens', {}, {});
+}
+
+
