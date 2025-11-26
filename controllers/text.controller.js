@@ -1,0 +1,67 @@
+import { Text } from "../db/models/index.js"
+import logger from "../config/logger.js";
+export const getAllTexts = async(req, res, next) => {
+    try{
+        const filter = {};
+        const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+        const page = Math.max(Number(req.query.page) || 1, 1);
+        const skip = (page - 1) * limit;
+        
+        if(req.query.difficulty) filter.difficulty = req.query.difficulty
+        
+        if(req.query.language) filter.language = req.query.language
+
+        const totalTexts = await Text.countDocuments(filter);
+
+        const texts = await Text.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+        if(texts.length === 0){
+            res.status(404);
+            return next(new Error("not have found texts"))
+        }
+        const totalPages = Math.ceil(totalTexts / limit);
+        return res.status(200).json({
+            msg: "Obtained texts",
+            data: {
+                totalTexts,
+                limit,
+                page,
+                skip,
+                totalPages,
+                texts
+            },
+            error: false
+        })
+    }catch(error){
+        logger.error(error, "getAllTexts error: ");
+        next(error);
+    }
+}
+
+export const getRandomText = async(req, res, next) => {
+    try{
+        const filter = {};
+        filter.difficulty = req.query.difficulty || "medium";
+        filter.language = req.query.language || "es";
+        if(req.query.tags) filter.tags = { $in: req.query.tags.split(",") };
+        
+        const texts = await Text.find(filter);
+
+        if(texts.length === 0){
+            res.status(404);
+            return next(new Error("not have found texts"))
+        }
+        
+        const randomText = Math.floor(Math.random() * texts.length);
+        logger.info(randomText);
+
+        return res.status(200).json({
+            msg: "Random Text obtained",
+            data: texts[randomText],
+            error: false
+        })
+    }catch(error){
+        logger.error(error, "getRandomText error: ");
+        next(error);
+    }
+}
