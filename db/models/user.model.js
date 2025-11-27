@@ -39,6 +39,16 @@ const userSchema = new mongoose.Schema(
         }],
         default: []
     },
+    is_oauth: {
+      type: Boolean,
+      default: false
+    },
+    oauth_provider: {
+      type: String
+    },
+    oauth_id: {
+      type: String
+    },
     totalGames: {
         type: Number,
         default: 0

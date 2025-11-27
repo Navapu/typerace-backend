@@ -10,6 +10,7 @@ import textRouter from './routes/text.routes.js';
 import gameRouter from './routes/game.routes.js'
 import './workers/cleanupRefreshTokens.worker.js';
 import {addcleanupQueue} from './queues/cleanupRefreshTokens.queue.js';
+import passport from './config/passport.js';
 const app = express();
 
 
@@ -19,6 +20,8 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(passport.initialize());
+
 
 connectDB();
 
