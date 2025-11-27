@@ -4,7 +4,8 @@ export const saveGame = async(req, res, next) => {
     try{
         console.log(req.user)
         const userId = req.user.id;
-        const textId = req.text.id; 
+        const textId = req.text.id;
+        const difficulty = req.text.difficulty; 
         const { rawWPM, adjustedWPM, accuracy, mode, charactersTyped, charactersCorrect, duration, startedAt, finishedAt } = req.body || {};
         const requiredFields = {
             rawWPM,
@@ -33,6 +34,7 @@ export const saveGame = async(req, res, next) => {
             res.status(400);
             return next(new Error("Invalid mode"));
         }
+        const text = await Text.findById(textId);
         const charactersWrong = charactersTyped - charactersCorrect;
         const game = await Game.create({
             userId,
@@ -41,6 +43,7 @@ export const saveGame = async(req, res, next) => {
             adjustedWPM,
             accuracy,
             mode,
+            difficulty,
             charactersTyped,
             charactersCorrect,
             charactersWrong,
@@ -64,24 +67,22 @@ export const saveGame = async(req, res, next) => {
 export const getUserGameHistory = async(req, res, next) =>{
     try{
         const userId = req.user.id;
-        const textFilter = {};
         const gameFilter = {userId};
         
         const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
         const page = Math.max(Number(req.query.page) || 1, 1);
         const skip = (page - 1) * limit;
 
-        if(req.query.difficulty) textFilter.difficulty = req.query.difficulty;
+        if(req.query.difficulty) gameFilter.difficulty = req.query.difficulty;
         if(req.query.mode) gameFilter.mode = req.query.mode;
-        if (req.query.tags) textFilter.tags = { $in: req.query.tags.split(",") };
+
+        const totalGames = await Game.countDocuments(gameFilter);
+
+
         const games = await Game.find(gameFilter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate({
             path: "textId",
-            match: textFilter,
-            select: "difficulty content"
+            select: "content"
         })
-
-        const filteredGames = games.filter(g => g.textId !== null);
-        const totalGames = filteredGames.length;
         const totalPages = Math.ceil(totalGames / limit);
         
         res.status(200).json({
@@ -92,7 +93,7 @@ export const getUserGameHistory = async(req, res, next) =>{
                 page,
                 skip,
                 totalPages,
-                games: filteredGames
+                games
             },
             error: false
         })

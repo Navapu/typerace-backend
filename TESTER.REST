@@ -1,6 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjM2NjU3LCJleHAiOjE3NjQyMzc1NTd9.McMmfzSG81jQaLvBNycn30jlgXx_0AKA-B5wEInxHsQ
-### REGISTER USER
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjQ0MDc2LCJleHAiOjE3NjQyNDQ5NzZ9.Z_TIGO4QmbLqH7GRA5VXYdxPRbMEvd5hNW0oerIodI4
 POST {{domain}}/auth/register
 Content-Type: application/json
 
@@ -45,6 +44,6 @@ Authorization: Bearer {{token}}
 }
 
 ###Games History
-GET {{domain}}/games/history?mode=normal&difficulty=medium
+GET {{domain}}/games/history
 Content-Type: application/json
 Authorization: Bearer {{token}}

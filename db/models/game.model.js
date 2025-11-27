@@ -38,6 +38,11 @@ const gameSchema = new mongoose.Schema({
         default: "normal",
         required: true
     },
+    difficulty: {
+        type: String,
+        enum: ["easy", "medium", "hard"],
+        required: true
+    },
     charactersTyped: {
         type: Number,
         required: true
