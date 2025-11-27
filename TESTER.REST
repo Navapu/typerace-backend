@@ -1,11 +1,11 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjQ0MDc2LCJleHAiOjE3NjQyNDQ5NzZ9.Z_TIGO4QmbLqH7GRA5VXYdxPRbMEvd5hNW0oerIodI4
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjg1MDgzZGM2ZWM4YjJjZTNmMWU1ZSIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDI0OTczMSwiZXhwIjoxNzY0MjUwNjMxfQ.3po_XPQTtOPbdrMAXl4vYq1CoCz2IFpKeSdCCSiCmhU
 POST {{domain}}/auth/register
 Content-Type: application/json
 
 {
-    "email": "prueba@gmail.com",
-    "username": "prueba",
+    "email": "prueba2@gmail.com",
+    "username": "prueba2",
     "password": "123456"
 }
 
@@ -31,12 +31,12 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "textId": "69281adc727549c276c5a128",
-  "rawWPM": 82,
-  "adjustedWPM": 78,
-  "accuracy": 95.1,
+  "textId": "6926fa6f727549c276c5a06d",
+  "rawWPM": 84,
+  "adjustedWPM": 80,
+  "accuracy": 97.1,
   "mode": "normal",
-  "charactersTyped": 420,
+  "charactersTyped": 422,
   "charactersCorrect": 399,
   "duration": 60,
   "startedAt": "2025-01-26T12:30:12.000Z",
@@ -45,5 +45,10 @@ Authorization: Bearer {{token}}
 
 ###Games History
 GET {{domain}}/games/history
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Metrics user
+GET {{domain}}/games/me/metrics
 Content-Type: application/json
 Authorization: Bearer {{token}}

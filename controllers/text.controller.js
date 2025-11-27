@@ -1,5 +1,6 @@
 import { Text } from "../db/models/index.js"
 import logger from "../config/logger.js";
+
 export const getAllTexts = async(req, res, next) => {
     try{
         const filter = {};
