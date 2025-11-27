@@ -1,5 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjg1MDgzZGM2ZWM4YjJjZTNmMWU1ZSIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDI0OTczMSwiZXhwIjoxNzY0MjUwNjMxfQ.3po_XPQTtOPbdrMAXl4vYq1CoCz2IFpKeSdCCSiCmhU
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjYxNjYxLCJleHAiOjE3NjQyNjI1NjF9.pMh5AQXJA0eJSBq4z74qATfmPvFjVqIaLZHC9hCwZOM
 POST {{domain}}/auth/register
 Content-Type: application/json
 
@@ -52,3 +52,12 @@ Authorization: Bearer {{token}}
 GET {{domain}}/games/me/metrics
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+###Logout
+DELETE {{domain}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImlhdCI6MTc2NDI2MjI5MSwiZXhwIjoxNzY2ODU0MjkxfQ.8M66B3lFOiz9Ze6C2nF6rhXm2W_gIoprkAQkxooRceU"
+}

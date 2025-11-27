@@ -1,7 +1,14 @@
 import logger from "../config/logger.js";
 import { User } from "../db/models/index.js";
 import crypto from "crypto";
-import { hashPassword, issueToken, comparePassword, issueRefreshToken, verifyToken} from "../services/auth.service.js";
+import {
+  hashPassword,
+  issueToken,
+  comparePassword,
+  issueRefreshToken,
+  verifyToken,
+} from "../services/auth.service.js";
+import { error } from "console";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -198,7 +205,7 @@ export const oauthLogin = async (req, res, next) => {
     let user = await User.findOne({
       email,
       is_oauth: true,
-      oauth_provider: "google"
+      oauth_provider: "google",
     });
 
     if (user) {
@@ -216,7 +223,7 @@ export const oauthLogin = async (req, res, next) => {
 
       user.refreshTokens.push({
         token: await hashPassword(refreshToken),
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
 
       await user.save();
@@ -228,16 +235,16 @@ export const oauthLogin = async (req, res, next) => {
           email: user.email,
           username: user.username,
           token,
-          refreshToken
+          refreshToken,
         },
-        error: false
+        error: false,
       });
     }
 
     // 2) Usuario existente sin OAuth → convertirlo a OAuth
     user = await User.findOne({
       email,
-      is_oauth: false
+      is_oauth: false,
     });
 
     if (user) {
@@ -259,7 +266,7 @@ export const oauthLogin = async (req, res, next) => {
 
       user.refreshTokens.push({
         token: await hashPassword(refreshToken),
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
 
       await user.save();
@@ -271,12 +278,17 @@ export const oauthLogin = async (req, res, next) => {
           email: user.email,
           username: user.username,
           token,
-          refreshToken
+          refreshToken,
         },
-        error: false
+        error: false,
       });
     }
+    const existsUser = await User.findOne({ $or: [{ email }, { username }] });
 
+    if (existsUser) {
+      res.status(400);
+      return next(new Error("email or username already exists"));
+    }
     // 3) Usuario completamente nuevo → crearlo
     const dummyPassword = crypto.randomBytes(16).toString("hex");
     const password_hash = await hashPassword(dummyPassword);
@@ -288,7 +300,7 @@ export const oauthLogin = async (req, res, next) => {
       role: "user",
       is_oauth: true,
       oauth_provider: "google",
-      oauth_id: googleId
+      oauth_id: googleId,
     });
 
     const token = issueToken({
@@ -305,7 +317,7 @@ export const oauthLogin = async (req, res, next) => {
 
     userCreated.refreshTokens.push({
       token: await hashPassword(refreshToken),
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
 
     await userCreated.save();
@@ -317,15 +329,70 @@ export const oauthLogin = async (req, res, next) => {
         email: userCreated.email,
         username: userCreated.username,
         token,
-        refreshToken
+        refreshToken,
       },
-      error: false
+      error: false,
     });
-
   } catch (error) {
     logger.error(error, "oauthLogin error:");
     next(error);
   }
 };
 
+export const getUser = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
 
+    const user = await User.findById(userId);
+
+    return res.status(200).json({
+      msg: "User obtained",
+      data: {
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+      },
+      error: false,
+    });
+  } catch (error) {
+    logger.error(error, "getUser error: ");
+    next(error);
+  }
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { refreshToken } = req.body || {};
+
+    if (!refreshToken) {
+      res.status(400);
+      return next(new Error("refresh token required"));
+    }
+
+    const user = await User.findById(userId);
+
+    console.log("Incoming token:", refreshToken);
+    console.log("Stored tokens:", user.refreshTokens.map(rt => rt.token));
+
+    const filteredTokens = await Promise.all(
+      user.refreshTokens.map(async (rt) => {
+        const isValid = await comparePassword(refreshToken, rt.token);
+        console.log(rt.token, "matches?", isValid);
+        return isValid ? null : rt;
+      })
+    );
+
+    user.refreshTokens = filteredTokens;
+    await user.save();
+
+    return res.status(200).json({
+      msg: "Completed logout",
+      data: {},
+      error: false,
+    });
+  } catch (error) {
+    logger.error(error, "logout error: ");
+    next(error);
+  }
+};
