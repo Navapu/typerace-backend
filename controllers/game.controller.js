@@ -1,6 +1,5 @@
 import logger from "../config/logger.js";
-import { Game } from "../db/models/index.js";
-
+import { Game, Text } from "../db/models/index.js";
 export const saveGame = async(req, res, next) => {
     try{
         console.log(req.user)
@@ -59,5 +58,46 @@ export const saveGame = async(req, res, next) => {
     }catch(error){
         logger.error(error, "saveGame error: ");
         next(error)
+    }
+}
+
+export const getUserGameHistory = async(req, res, next) =>{
+    try{
+        const userId = req.user.id;
+        const textFilter = {};
+        const gameFilter = {userId};
+        
+        const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
+        const page = Math.max(Number(req.query.page) || 1, 1);
+        const skip = (page - 1) * limit;
+
+        if(req.query.difficulty) textFilter.difficulty = req.query.difficulty;
+        if(req.query.mode) gameFilter.mode = req.query.mode;
+        if (req.query.tags) textFilter.tags = { $in: req.query.tags.split(",") };
+        const games = await Game.find(gameFilter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate({
+            path: "textId",
+            match: textFilter,
+            select: "difficulty content"
+        })
+
+        const filteredGames = games.filter(g => g.textId !== null);
+        const totalGames = filteredGames.length;
+        const totalPages = Math.ceil(totalGames / limit);
+        
+        res.status(200).json({
+            msg: "Games history :",
+            data: {
+                totalGames,
+                limit,
+                page,
+                skip,
+                totalPages,
+                games: filteredGames
+            },
+            error: false
+        })
+    }catch(error){
+        logger.error(error, "getUserGameHistory error: ");
+        next(error);
     }
 }

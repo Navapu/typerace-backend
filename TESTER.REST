@@ -1,6 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MTczODYzLCJleHAiOjE3NjQxNzQ3NjN9.w651i-adDS0iUrqKieJKMIr5g8DYZv3aWEiDi6VXevo
-
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjM2NjU3LCJleHAiOjE3NjQyMzc1NTd9.McMmfzSG81jQaLvBNycn30jlgXx_0AKA-B5wEInxHsQ
 ### REGISTER USER
 POST {{domain}}/auth/register
 Content-Type: application/json
@@ -25,7 +24,7 @@ POST {{domain}}/auth/refresh
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjVhMjk5NjcyMDYzZGU2YWYyMTMwMCIsImlhdCI6MTc2NDA3NDQ0MywiZXhwIjoxNzY2NjY2NDQzfQ.BerYGeRUwAvxWefD5zAlw_a91w00UH9OM1DsCZZ4UKc"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImlhdCI6MTc2NDIzMjI3MywiZXhwIjoxNzY2ODI0MjczfQ.aVxxCsjAR7rZkScSpCUOKxZuUU8RCepycYIYsNDXbfw"
 }
 ### Game
 POST {{domain}}/games/save
@@ -33,7 +32,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "textId": "6926fa6f727549c276c5a06d",
+  "textId": "69281adc727549c276c5a128",
   "rawWPM": 82,
   "adjustedWPM": 78,
   "accuracy": 95.1,
@@ -44,3 +43,8 @@ Authorization: Bearer {{token}}
   "startedAt": "2025-01-26T12:30:12.000Z",
   "finishedAt": "2025-01-26T12:31:12.000Z"
 }
+
+###Games History
+GET {{domain}}/games/history?mode=normal&difficulty=medium
+Content-Type: application/json
+Authorization: Bearer {{token}}
