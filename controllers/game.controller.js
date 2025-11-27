@@ -102,3 +102,28 @@ export const getUserGameHistory = async(req, res, next) =>{
         next(error);
     }
 }
+
+export const getTopScore = async(req, res, next) => {
+    try{
+        const filter = {};
+        
+        if(req.query.difficulty) filter.difficulty = req.query.difficulty;
+        if(req.query.mode) filter.mode = req.query.mode;
+        if(req.query.textId) filter.textId = req.query.textId;
+
+        const game = await Game.find(filter).limit(Math.max(Number(req.query.limit) || 10, 20)).sort({adjustedWPM: -1}).populate("textId", "content");
+
+        if(game.length === 0){
+            res.status(404);
+            return next(new Error("not have found games"))
+        }
+        return res.status(200).json({
+            msg: "Obtained the bests scores",
+            data: game,
+            error: false
+        })
+    }catch(error){
+        logger.error(error, "getTopScore error: ");
+        next(error);
+    }
+}
