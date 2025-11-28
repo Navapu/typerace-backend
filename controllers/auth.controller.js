@@ -401,3 +401,45 @@ export const logout = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUser = async(req, res, next) => {
+  try{
+    const userId = req.user.id;
+    const { username, email } = req.body || {};
+
+    if(!username?.trim() && !email?.trim()){
+      res.status(400);
+      return next(new Error("insert email or username"))
+    }
+
+    if (email && !emailRegex.test(email)) {
+      res.status(400);
+      return next(new Error("invalid email format"));
+    }
+
+    if (username && (username.length < 3 || username.length > 20)) {
+      res.status(400);
+      return next(new Error("username must be between 3 and 20 characters"));
+    }
+
+    const existsUser = await User.findOne({ $or: [{ email }, { username }] });
+
+    if (existsUser && existsUser._id !== userId) {
+      res.status(400);
+      return next(new Error("email or username already exists"));
+    }
+
+    const user = await User.findByIdAndUpdate(userId, {username: username, email: email}, {new: true});
+
+    return res.status(200).json({
+      msg: "Updated user",
+      data: {
+        email: user.email,
+        username: user.username
+      }
+    });
+  }catch(error){
+    logger.error(error, "updateUser error: ");
+    next(error);
+  }
+}

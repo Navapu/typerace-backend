@@ -1,11 +1,11 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDMzMTg4NCwiZXhwIjoxNzY0MzMyNzg0fQ.RUzK7BVQreBzTvrZgH-tcLt2JGwUO_A6VlzGHEG4jpc
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDMzNDEyMCwiZXhwIjoxNzY0MzM1MDIwfQ.bmTnZyG9j7_v0qwNyXoORmlp2P1Zr6gPt53cX_66Hv0
 POST {{domain}}/auth/register
 Content-Type: application/json
 
 {
-    "email": "prueba2@gmail.com",
-    "username": "prueba2",
+    "email": "prueba3@gmail.com",
+    "username": "prueba3",
     "password": "123456"
 }
 
@@ -60,4 +60,13 @@ Authorization: Bearer {{token}}
 
 {
     "refreshToken_id": "4d8bf28019bfdc589d6da64e166e1781"
+}
+
+###Update User
+PUT  {{domain}}/auth/update
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "email": "prueba3@gmail.com"
 }
