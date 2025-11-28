@@ -8,7 +8,6 @@ import {
   issueRefreshToken,
   verifyToken,
 } from "../services/auth.service.js";
-import { error } from "console";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -59,9 +58,10 @@ export const register = async (req, res, next) => {
       email: newUser.email,
       role: newUser.role,
     });
-
+    const id = crypto.randomBytes(16).toString("hex");
     const refreshTokenHashed = await hashPassword(refreshToken);
     newUser.refreshTokens.push({
+      id,
       token: refreshTokenHashed,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
@@ -76,6 +76,7 @@ export const register = async (req, res, next) => {
         username: newUser.username,
         token,
         refreshToken,
+        refreshToken_id: id
       },
       error: false,
     });
@@ -120,7 +121,9 @@ export const login = async (req, res, next) => {
     });
 
     const refreshTokenHashed = await hashPassword(refreshToken);
+    const id = crypto.randomBytes(16).toString("hex");
     user.refreshTokens.push({
+      id,
       token: refreshTokenHashed,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
@@ -134,6 +137,7 @@ export const login = async (req, res, next) => {
         username: user.username,
         token,
         refreshToken,
+        refreshToken_id: id
       },
       error: false,
     });
@@ -195,7 +199,7 @@ export const refreshAccessToken = async (req, res, next) => {
 export const oauthLogin = async (req, res, next) => {
   try {
     const { googleId, email, username } = req.user || {};
-
+    const id = crypto.randomBytes(16).toString("hex");
     if (!googleId?.trim() || !email?.trim() || !username?.trim()) {
       res.status(400);
       return next(new Error("email, username and googleId are required"));
@@ -220,8 +224,8 @@ export const oauthLogin = async (req, res, next) => {
         email: user.email,
         role: user.role,
       });
-
       user.refreshTokens.push({
+        id,
         token: await hashPassword(refreshToken),
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
@@ -236,6 +240,7 @@ export const oauthLogin = async (req, res, next) => {
           username: user.username,
           token,
           refreshToken,
+          refreshToken_id: id
         },
         error: false,
       });
@@ -263,8 +268,8 @@ export const oauthLogin = async (req, res, next) => {
         email: user.email,
         role: user.role,
       });
-
       user.refreshTokens.push({
+        id,
         token: await hashPassword(refreshToken),
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
@@ -279,6 +284,7 @@ export const oauthLogin = async (req, res, next) => {
           username: user.username,
           token,
           refreshToken,
+          refreshToken_id: id
         },
         error: false,
       });
@@ -314,8 +320,8 @@ export const oauthLogin = async (req, res, next) => {
       email: userCreated.email,
       role: userCreated.role,
     });
-
     userCreated.refreshTokens.push({
+      id,
       token: await hashPassword(refreshToken),
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
@@ -330,6 +336,7 @@ export const oauthLogin = async (req, res, next) => {
         username: userCreated.username,
         token,
         refreshToken,
+        refreshToken_id: id
       },
       error: false,
     });
@@ -363,32 +370,30 @@ export const getUser = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { refreshToken } = req.body || {};
+    const { refreshToken_id } = req.body || {};
 
-    if (!refreshToken) {
+    if (!refreshToken_id) {
       res.status(400);
-      return next(new Error("refresh token required"));
+      return next(new Error("refreshToken_id required"));
     }
 
     const user = await User.findById(userId);
+    const initialCount  = user.refreshTokens.length;
+    const filteredTokens = user.refreshTokens.map((rt) => {
+        if(rt.id === refreshToken_id) return false;
+        return rt
+      });
 
-    console.log("Incoming token:", refreshToken);
-    console.log("Stored tokens:", user.refreshTokens.map(rt => rt.token));
-
-    const filteredTokens = await Promise.all(
-      user.refreshTokens.map(async (rt) => {
-        const isValid = await comparePassword(refreshToken, rt.token);
-        console.log(rt.token, "matches?", isValid);
-        return isValid ? null : rt;
-      })
-    );
-
-    user.refreshTokens = filteredTokens;
+    if(initialCount  === filteredTokens.filter(Boolean).length){
+      res.status(400);
+      return next(new Error("invalid refreshToken_id"))
+    }
+    user.refreshTokens = filteredTokens.filter(Boolean);
     await user.save();
 
     return res.status(200).json({
-      msg: "Completed logout",
-      data: {},
+      msg: "Completed logout: ",
+      data: {refreshToken_id},
       error: false,
     });
   } catch (error) {

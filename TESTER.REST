@@ -1,5 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY0MjYxNjYxLCJleHAiOjE3NjQyNjI1NjF9.pMh5AQXJA0eJSBq4z74qATfmPvFjVqIaLZHC9hCwZOM
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDMzMTg4NCwiZXhwIjoxNzY0MzMyNzg0fQ.RUzK7BVQreBzTvrZgH-tcLt2JGwUO_A6VlzGHEG4jpc
 POST {{domain}}/auth/register
 Content-Type: application/json
 
@@ -14,7 +14,7 @@ POST {{domain}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "prueba@gmail.com",
+    "email": "prueba2@gmail.com",
     "password": "123456"
 }
 
@@ -23,7 +23,7 @@ POST {{domain}}/auth/refresh
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImlhdCI6MTc2NDIzMjI3MywiZXhwIjoxNzY2ODI0MjczfQ.aVxxCsjAR7rZkScSpCUOKxZuUU8RCepycYIYsNDXbfw"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImlhdCI6MTc2NDMzMTg1OSwiZXhwIjoxNzY2OTIzODU5fQ.LpAHQSFmmIgO7sXjGEbJNMoHrL3FDbJWUWG2eOzjwoY"
 }
 ### Game
 POST {{domain}}/games/save
@@ -59,5 +59,5 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjcyODI2YWQ4NzI1YWQ5Y2U3MTljNCIsImlhdCI6MTc2NDI2MjI5MSwiZXhwIjoxNzY2ODU0MjkxfQ.8M66B3lFOiz9Ze6C2nF6rhXm2W_gIoprkAQkxooRceU"
+    "refreshToken_id": "4d8bf28019bfdc589d6da64e166e1781"
 }
