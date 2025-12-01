@@ -14,7 +14,7 @@ POST {{domain}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "prueba2@gmail.com",
+    "email": "prueba3@gmail.com",
     "password": "123456"
 }
 
