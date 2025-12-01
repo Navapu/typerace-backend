@@ -8,7 +8,8 @@ import logger from './config/logger.js';
 import { notFoundHandler, errorMiddleware } from './middleware/error.middleware.js';
 import authRouter from './routes/auth.routes.js';
 import textRouter from './routes/text.routes.js';
-import gameRouter from './routes/game.routes.js'
+import gameRouter from './routes/game.routes.js';
+import healthRoutes from "./routes/health.routes.js";
 import './workers/cleanupRefreshTokens.worker.js';
 import { addcleanupQueue } from './queues/cleanupRefreshTokens.queue.js';
 import { limiter } from './middleware/rateLimit.middleware.js';
@@ -35,6 +36,7 @@ app.get("/", (req, res) => {
 app.use('/auth', authRouter);
 app.use('/texts', textRouter);
 app.use('/games', gameRouter);
+app.use("/", healthRoutes);
 
 // ---------------------------
 // ERROR HANDLING / MANEJO DE ERRORES
