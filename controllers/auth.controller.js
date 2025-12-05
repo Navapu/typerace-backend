@@ -71,7 +71,6 @@ export const register = async (req, res, next) => {
     return res.status(200).json({
       msg: "Registered user",
       data: {
-        id: newUser._id,
         email: newUser.email,
         username: newUser.username,
         token,
@@ -132,7 +131,6 @@ export const login = async (req, res, next) => {
     return res.status(200).json({
       msg: "Correct login",
       data: {
-        id: user._id,
         email: user.email,
         username: user.username,
         token,
@@ -407,6 +405,26 @@ export const updateUser = async(req, res, next) => {
     });
   }catch(error){
     logger.error(error, "updateUser error: ");
+    next(error);
+  }
+}
+
+export const getUserInformation = async(req, res, next) => {
+  try{
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select("email username");
+
+
+    return res.status(200).json({
+      msg: "User information: ",
+      data: {
+        email: user.email,
+        username: user.username
+      }
+    })
+  }catch(error){
+    logger.error(error, "getUserInformation")
     next(error);
   }
 }
