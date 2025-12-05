@@ -97,14 +97,14 @@ export const login = async (req, res, next) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      res.status(401);
+      res.status(400);
       return next(new Error("invalid email or password"));
     }
 
     const isMatch = await comparePassword(password, user.password);
 
     if (!isMatch) {
-      res.status(401);
+      res.status(400);
       return next(new Error("invalid email or password"));
     }
 
@@ -232,18 +232,7 @@ export const oauthLogin = async (req, res, next) => {
 
       await user.save();
 
-      return res.status(200).json({
-        msg: "Correct login",
-        data: {
-          id: user._id,
-          email: user.email,
-          username: user.username,
-          token,
-          refreshToken,
-          refreshToken_id: id
-        },
-        error: false,
-      });
+      return res.redirect(`http://localhost:5173/auth/login-success?token=${token}&refreshToken=${refreshToken}&refreshToken_id=${id}`);
     }
 
     // 2) Usuario existente sin OAuth → convertirlo a OAuth
@@ -276,18 +265,7 @@ export const oauthLogin = async (req, res, next) => {
 
       await user.save();
 
-      return res.status(200).json({
-        msg: "Correct login with OAuth conversion",
-        data: {
-          id: user._id,
-          email: user.email,
-          username: user.username,
-          token,
-          refreshToken,
-          refreshToken_id: id
-        },
-        error: false,
-      });
+      return res.redirect(`http://localhost:5173/auth/login-success?token=${token}&refreshToken=${refreshToken}&refreshToken_id=${id}`);
     }
     const existsUser = await User.findOne({ $or: [{ email }, { username }] });
 
@@ -328,18 +306,7 @@ export const oauthLogin = async (req, res, next) => {
 
     await userCreated.save();
 
-    return res.status(200).json({
-      msg: "User created with OAuth",
-      data: {
-        id: userCreated._id,
-        email: userCreated.email,
-        username: userCreated.username,
-        token,
-        refreshToken,
-        refreshToken_id: id
-      },
-      error: false,
-    });
+    return res.redirect(`http://localhost:5173/auth/login-success?token=${token}&refreshToken=${refreshToken}&refreshToken_id=${id}`);
   } catch (error) {
     logger.error(error, "oauthLogin error:");
     next(error);

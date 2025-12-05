@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import cron from 'node-cron';
 import passport from './config/passport.js';
 import { PORT, BACKEND_URL } from './config/config.js';
@@ -13,14 +12,14 @@ import healthRoutes from "./routes/health.routes.js";
 import './workers/cleanupRefreshTokens.worker.js';
 import { addcleanupQueue } from './queues/cleanupRefreshTokens.queue.js';
 import { limiter } from './middleware/rateLimit.middleware.js';
-
+import corsMiddleware from './middleware/cors.middleware.js';
 const app = express();
 
 
 // ---------------------------
 // MIDDLEWARES / MIDDLEWARES
 // ---------------------------
-app.use(cors());
+app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(passport.initialize());

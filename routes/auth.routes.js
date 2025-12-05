@@ -11,5 +11,5 @@ router.post('/refresh', refreshAccessToken);
 router.delete('/logout', auth ,logout);
 router.put('/update', authLimiter, auth, updateUser);
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}))
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: 'https://wizardfootball.com/live/login' }), oauthLogin)
+router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: 'http://localhost:3007/auth/login' }), oauthLogin)
 export default router;
