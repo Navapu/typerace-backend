@@ -196,31 +196,3 @@ export const getLastGame = async (req, res, next) => {
     next(error);
   }
 }
-export const getMetricsText = async(req, res, next) => {
-  try{
-    const textId = req.text.id;
-    const metrics = await Game.aggregate([
-      { $match: { textId: new mongoose.Types.ObjectId(textId) } },
-      {
-        $group: {
-          _id: "$textId",
-          bestWPM: { $max: "$adjustedWPM" },
-          avgWPM: { $avg: "$adjustedWPM" },
-          avgAccuracy: { $avg: "$accuracy" },
-        },
-      },
-    ]);
-    if(metrics.length === 0){
-        res.status(404);
-        return next(new Error("no metrics found for this text"))
-    }
-    res.status(200).json({
-        msg: "Obtained text metrics",
-        data: metrics[0],
-        error: false
-    });
-  }catch(error){
-    logger.error(error, "getMetricsText error: ");
-    next(error);
-  }
-}
