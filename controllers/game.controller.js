@@ -179,3 +179,24 @@ export const getPlayerMetrics = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getLastGame = async (req, res, next) => {
+  try{
+    const userId = req.user.id;
+    const lastGame = await Game.findOne({userId: userId}).sort({createdAt: -1});
+    if(!lastGame){
+      res.status(404);
+      return next(new Error("not have found games"))
+    }
+
+    return res.status(200).json({
+      msg: "Obtained last game",
+      data: lastGame,
+      error: false
+    })
+
+  }catch(error){
+    logger.error(error, "getLastGame error: ");
+    next(error);
+  }
+}
