@@ -1,6 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhMkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDMzNDEyMCwiZXhwIjoxNzY0MzM1MDIwfQ.bmTnZyG9j7_v0qwNyXoORmlp2P1Zr6gPt53cX_66Hv0
-POST {{domain}}/auth/register
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1ODk1OTIyLCJleHAiOjE3NjU4OTY4MjJ9.VvmfULN94tBD0aOQKO9NdsuE_6-inNlaKDv3yTUg8K8
 Content-Type: application/json
 
 {
@@ -14,7 +13,7 @@ POST {{domain}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "prueba3@gmail.com",
+    "email": "prueba@gmail.com",
     "password": "123456"
 }
 
@@ -23,7 +22,7 @@ POST {{domain}}/auth/refresh
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImlhdCI6MTc2NDMzMTg1OSwiZXhwIjoxNzY2OTIzODU5fQ.LpAHQSFmmIgO7sXjGEbJNMoHrL3FDbJWUWG2eOzjwoY"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImlhdCI6MTc2NTg3OTA0MCwiZXhwIjoxNzY4NDcxMDQwfQ.5k9aJIn0XJH_9m9XJaPBoxYQ6QxZv3ffgkjgv1jFSlg"
 }
 ### Game
 POST {{domain}}/games/save

@@ -2,7 +2,7 @@ import { Text } from "../db/models/index.js";
 
 export const validateTextId = async(req, res, next) => {
     try{
-        const  textId  = req.body?.textId || req.params?.textId || {};
+        const textId  = req.body?.textId || req.params?.textId || {};
 
         if(!textId){
             res.status(400);
