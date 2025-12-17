@@ -67,30 +67,54 @@ export const getRandomText = async(req, res, next) => {
     }
 }
 export const getMetricsText = async(req, res, next) => {
-  try{
-    const textId = req.text.id;
-    const metrics = await Game.aggregate([
-      { $match: { textId: new mongoose.Types.ObjectId(textId) } },
-      {
-        $group: {
-          _id: "$textId",
-          bestWPM: { $max: "$adjustedWPM" },
-          avgWPM: { $avg: "$adjustedWPM" },
-          avgAccuracy: { $avg: "$accuracy" },
-        },
-      },
-    ]);
-    if(metrics.length === 0){
-        res.status(404);
-        return next(new Error("no metrics found for this text"))
+    try {
+        const textId = req.text.id;
+        const text = await Text.findById(textId);
+        if (!text) {
+            res.status(404);
+            return next(new Error("Text not found"));
+        }
+
+        const metrics = await Game.aggregate([
+            { $match: { textId: new mongoose.Types.ObjectId(textId) } },
+            { $sort: { adjustedWPM: 1 } },
+            {
+                $group: {
+                    _id: null,
+                    bestWPM: { $max: "$adjustedWPM" },
+                    avgWPM: { $avg: "$adjustedWPM" },
+                    avgAccuracy: { $avg: "$accuracy" },
+                    wpms: { $push: "$adjustedWPM" }
+                }
+            }
+        ]);
+
+        if (!metrics.length || !metrics[0].wpms.length) {
+            res.status(404);
+            return next(new Error("no metrics found for this text"));
+        }
+        const wpms = metrics[0].wpms;
+        const len = wpms.length;
+        let medianWPM;
+        if (len % 2 === 0) {
+            medianWPM = (wpms[len / 2 - 1] + wpms[len / 2]) / 2;
+        } else {
+            medianWPM = wpms[Math.floor(len / 2)];
+        }
+
+        res.status(200).json({
+            msg: "Obtained text metrics",
+            data: {
+                textContent: text.content,
+                bestWPM: metrics[0].bestWPM,
+                avgWPM: metrics[0].avgWPM,
+                medianWPM,
+                avgAccuracy: metrics[0].avgAccuracy
+            },
+            error: false
+        });
+    } catch (error) {
+        logger.error(error, "getMetricsText error: ");
+        next(error);
     }
-    res.status(200).json({
-        msg: "Obtained text metrics",
-        data: metrics[0],
-        error: false
-    });
-  }catch(error){
-    logger.error(error, "getMetricsText error: ");
-    next(error);
-  }
 }
