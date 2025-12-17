@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 
 export const saveGame = async (req, res, next) => {
   try {
-    console.log(req.user);
     const userId = req.user.id;
     const textId = req.text.id;
     const difficulty = req.text.difficulty;
@@ -44,13 +43,11 @@ export const saveGame = async (req, res, next) => {
       return next(new Error("WPM and accuracy must be numbers"));
     }
 
-    // Validate mode
     const allowedModes = ["normal", "time-attack", "zen"];
     if (!allowedModes.includes(mode)) {
       res.status(400);
       return next(new Error("Invalid mode"));
     }
-    const text = await Text.findById(textId);
     const charactersWrong = charactersTyped - charactersCorrect;
     const game = await Game.create({
       userId,

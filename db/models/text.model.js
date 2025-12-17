@@ -29,14 +29,6 @@ const textSchema = new mongoose.Schema({
         enum: ["coding", "random", "punctuations", "numbers"],
         default: []
     },
-    avgWPM: {
-        type: Number,
-        default: 0
-    },
-    avgAccuracy: {
-        type: Number,
-        default: 0
-    },
     timesPlayed: {
         type: Number,
         default: 0

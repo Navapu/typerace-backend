@@ -2,6 +2,47 @@ import { Text, Game } from "../db/models/index.js";
 import logger from "../config/logger.js";
 import mongoose from "mongoose";
 
+
+export const insertText = async(req, res, next) => {
+    try{
+        const {content, difficulty, language } = req.body || {};
+        
+        if(!content?.trim() || !difficulty?.trim() || !language?.trim()){
+            res.status(400);
+            return next(new Error("content, difficulty and language are required"));
+        }
+        const difficultylower = difficulty.toLowerCase();
+        const languagelower = language.toLowerCase();
+        if(content.length < 250){
+            res.status(400);
+            return next(new Error("the text must be at least 250 characters long."));
+        }
+
+        if(difficultylower !== "easy" && difficultylower !== "medium" && difficultylower !== "hard"){
+            res.status(400);
+            return next(new Error("the difficulty has to be easy, medium or hard"));
+        }
+        if(languagelower !== "es" && languagelower !== "en"){
+            res.status(400);
+            return next(new Error("the language has to be 'es' or 'en'"));
+        }
+        const newText = await Text.create({
+            content,
+            difficulty: difficultylower,
+            language: languagelower
+        });
+
+        return res.status(201).json({
+            msg: "New text created",
+            data: newText,
+            error: false
+        });
+    }catch(error){
+        logger.error(error, "insertText error: ");
+        next(error);
+    }
+}
+
 export const getAllTexts = async(req, res, next) => {
     try{
         const filter = {};
@@ -44,7 +85,7 @@ export const getRandomText = async(req, res, next) => {
     try{
         const filter = {};
         filter.difficulty = req.query.difficulty || "medium";
-        filter.language = req.query.language || "es";
+        filter.language = req.query.language || "en";
         if(req.query.tags) filter.tags = { $in: req.query.tags.split(",") };
         
         const texts = await Text.find(filter);
