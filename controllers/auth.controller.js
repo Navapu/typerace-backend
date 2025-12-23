@@ -1,6 +1,7 @@
 import logger from "../config/logger.js";
 import { User } from "../db/models/index.js";
 import crypto from "crypto";
+import { INTERNAL_API_KEY } from "../config/config.js";
 import {
   hashPassword,
   issueToken,
@@ -82,6 +83,84 @@ export const register = async (req, res, next) => {
     });
   } catch (error) {
     logger.error(error, "register error: ");
+    next(error);
+  }
+};
+
+export const registerAdmin = async (req, res, next) => {
+  try {
+    const apiKey = req.headers["x-api-key"];
+    if (!apiKey || apiKey !== INTERNAL_API_KEY) {
+      res.status(403);
+      return next(new Error("invalid_api_key"));
+    }
+    const { email, username, password, role } = req.body || {};
+    if (!email?.trim() || !username?.trim() || !password?.trim()) {
+      res.status(400);
+      return next(new Error("email, username and password are required"));
+    }
+    const existsUser = await User.findOne({ $or: [{ email }, { username }] });
+
+    if (existsUser) {
+      res.status(400);
+      return next(new Error("email or username already exists"));
+    }
+
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      return next(new Error("invalid email format"));
+    }
+
+    if (username.length < 3 || username.length > 20) {
+      res.status(400);
+      return next(new Error("username must be between 3 and 20 characters"));
+    }
+
+    if (password.length < 6 || password.length > 50) {
+      res.status(400);
+      return next(new Error("password must be between 6 and 50 characters"));
+    }
+    const hashedPassword = await hashPassword(password);
+    const newUser = await User.create({
+      email,
+      username,
+      password: hashedPassword,
+      role: role === "admin" ? "admin" : "user",
+    });
+
+    const token = issueToken({
+      id: newUser._id,
+      email: newUser.email,
+      role: newUser.role,
+    });
+
+    const refreshToken = issueRefreshToken({
+      id: newUser._id,
+      email: newUser.email,
+      role: newUser.role,
+    });
+    const id = crypto.randomBytes(16).toString("hex");
+    const refreshTokenHashed = await hashPassword(refreshToken);
+    
+    newUser.refreshTokens.push({
+      id,
+      token: refreshTokenHashed,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+
+    await newUser.save();
+
+    return res.status(201).json({
+      msg: "Registered user",
+      data: {
+        email: newUser.email,
+        username: newUser.username,
+        role: newUser.role
+      },
+      error: false,
+    });
+  } catch (error) {
+    logger.error(error, "registerAdmin error: ");
     next(error);
   }
 };

@@ -61,10 +61,14 @@ export const saveGame = async (req, res, next) => {
     
     const charactersWrong = charactersTyped - charactersCorrect;
     const errorRate = (charactersWrong / charactersTyped) * 100;
-    
-    if (accuracy < 0 || accuracy > 100 || accuracy !== parseFloat((100 - errorRate).toFixed(2))) {
+
+    if (accuracy < 0 || accuracy > 100) {
       res.status(400);
       return next(new Error("Accuracy value is invalid"));
+    }
+    if(errorRate > 20){
+      res.status(400);
+      return next(new Error("Error rate is too high"));
     }
     const game = await Game.create({
       userId,

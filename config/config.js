@@ -22,7 +22,7 @@ export const DATABASE = process.env.DATABASE || "database";
 // AUTHENTICATION / AUTENTICACIÓN
 // ---------------------------
 export const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-later";
-
+export const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
 // ---------------------------
 // GOOGLE OAUTH
 // ---------------------------

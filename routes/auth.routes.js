@@ -1,11 +1,12 @@
 import express from 'express';
-import { register, login, refreshAccessToken, oauthLogin, logout, updateUser, getUserInformation } from '../controllers/auth.controller.js';
+import { register, login, refreshAccessToken, oauthLogin, logout, updateUser, getUserInformation, registerAdmin } from '../controllers/auth.controller.js';
 import { auth } from '../middleware/auth.middleware.js';
-import { authLimiter } from '../middleware/rateLimit.middleware.js';
+import { authLimiter, registerAdminLimiter } from '../middleware/rateLimit.middleware.js';
 import passport from 'passport';
 const router = express.Router();
 
 router.post('/register', authLimiter, register);
+router.post('/register-admin', registerAdminLimiter, registerAdmin);
 router.post('/login', authLimiter, login);
 router.post('/refresh', refreshAccessToken);
 router.delete('/logout', auth ,logout);
