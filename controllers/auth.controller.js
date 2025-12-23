@@ -68,11 +68,12 @@ export const register = async (req, res, next) => {
 
     await newUser.save();
 
-    return res.status(200).json({
+    return res.status(201).json({
       msg: "Registered user",
       data: {
         email: newUser.email,
         username: newUser.username,
+        role: newUser.role,
         token,
         refreshToken,
         refreshToken_id: id
@@ -133,6 +134,7 @@ export const login = async (req, res, next) => {
       data: {
         email: user.email,
         username: user.username,
+        role: user.role,
         token,
         refreshToken,
         refreshToken_id: id

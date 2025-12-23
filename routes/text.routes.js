@@ -5,7 +5,7 @@ import { auth, roleMiddleware } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
-router.post('/insert', auth ,roleMiddleware, insertText);
+router.post('/insert', auth ,roleMiddleware('admin'), insertText);
 router.get('/', getAllTexts);
 router.get('/random', getRandomText);
 router.get('/:textId/metrics', validateTextId, getMetricsText);

@@ -52,9 +52,9 @@ export const saveGame = async (req, res, next) => {
     const game = await Game.create({
       userId,
       textId,
-      rawWPM,
-      adjustedWPM,
-      accuracy,
+      rawWPM: parseFloat(rawWPM.toFixed(2)),
+      adjustedWPM: parseFloat(adjustedWPM.toFixed(2)),
+      accuracy: parseFloat(accuracy.toFixed(2)),
       mode,
       difficulty,
       charactersTyped,
@@ -65,7 +65,7 @@ export const saveGame = async (req, res, next) => {
       finishedAt,
     });
 
-    return res.status(200).json({
+    return res.status(201).json({
       msg: "Game saved",
       data: game,
       error: false,
