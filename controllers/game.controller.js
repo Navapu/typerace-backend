@@ -48,7 +48,24 @@ export const saveGame = async (req, res, next) => {
       res.status(400);
       return next(new Error("Invalid mode"));
     }
+
+    if(charactersCorrect > charactersTyped){
+      res.status(400);
+      return next(new Error("charactersCorrect cannot be greater than charactersTyped"));
+    }
+    
+    if(rawWPM > 160 || adjustedWPM > 160){
+      res.status(400);
+      return next(new Error("WPM values seem to be too high"));
+    }
+    
     const charactersWrong = charactersTyped - charactersCorrect;
+    const errorRate = (charactersWrong / charactersTyped) * 100;
+    
+    if (accuracy < 0 || accuracy > 100 || accuracy !== parseFloat((100 - errorRate).toFixed(2))) {
+      res.status(400);
+      return next(new Error("Accuracy value is invalid"));
+    }
     const game = await Game.create({
       userId,
       textId,
@@ -154,6 +171,14 @@ export const getPlayerMetrics = async (req, res, next) => {
           bestWPM: { $max: "$adjustedWPM" },
           avgWPM: { $avg: "$adjustedWPM" },
           avgAccuracy: { $avg: "$accuracy" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          bestWPM: { $round: ["$bestWPM", 2] },
+          avgWPM: { $round: ["$avgWPM", 2] },
+          avgAccuracy: { $round: ["$avgAccuracy", 2] },
         },
       },
     ]);
