@@ -5,17 +5,17 @@ import mongoose from "mongoose";
 
 export const insertText = async(req, res, next) => {
     try{
-        const {content, difficulty, language } = req.body || {};
+        const {content, difficulty, language, title } = req.body || {};
         
-        if(!content?.trim() || !difficulty?.trim() || !language?.trim()){
+        if(!content?.trim() || !difficulty?.trim() || !language?.trim() || !title?.trim()){
             res.status(400);
-            return next(new Error("content, difficulty and language are required"));
+            return next(new Error("content, title,  difficulty and language are required"));
         }
         const difficultylower = difficulty.toLowerCase();
         const languagelower = language.toLowerCase();
-        if(content.length < 250){
+        if(content.length < 170){
             res.status(400);
-            return next(new Error("the text must be at least 250 characters long."));
+            return next(new Error("the text must be at least 170 characters long."));
         }
 
         if(difficultylower !== "easy" && difficultylower !== "medium" && difficultylower !== "hard"){

@@ -115,6 +115,7 @@ export const getUserGameHistory = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
+      .populate("textId", "title");
     const totalPages = Math.ceil(totalGames / limit);
 
     res.status(200).json({
