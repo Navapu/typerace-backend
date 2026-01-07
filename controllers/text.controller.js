@@ -28,6 +28,7 @@ export const insertText = async(req, res, next) => {
         }
         const newText = await Text.create({
             content,
+            title,
             difficulty: difficultylower,
             language: languagelower
         });
@@ -39,6 +40,53 @@ export const insertText = async(req, res, next) => {
         });
     }catch(error){
         logger.error(error, "insertText error: ");
+        next(error);
+    }
+}
+
+export const editText = async(req, res, next) => {
+    try{
+        const textId = req.text.id;
+        const {title, content, language, difficulty} = req.body;
+
+        const difficultylower = difficulty && difficulty.toLowerCase();
+        const languagelower = language && language.toLowerCase();
+
+        if(content && content.length < 170){
+            res.status(400);
+            return next(new Error("the text must be at least 170 characters long."));
+        }
+
+        if(difficultylower && (difficultylower !== "easy" && difficultylower !== "medium" && difficultylower !== "hard")){
+            res.status(400);
+            return next(new Error("the difficulty has to be easy, medium or hard"));
+        }
+        
+        if(languagelower && (languagelower !== "es" && languagelower !== "en")){
+            res.status(400);
+            return next(new Error("the language has to be 'es' or 'en'"));
+        }
+
+        const updatedText = await Text.findByIdAndUpdate(textId, {
+            title,
+            content,
+            difficulty: difficultylower,
+            language: languagelower
+        }, {new: true, runValidators: true} );
+
+        if(!updatedText){
+            res.status(404);
+            return next(new Error("Text not found"))
+        }
+        return res.status(200).json({
+            msg: "Updated text",
+            data: updatedText,
+            error: false
+        });
+
+
+    }catch(error){
+        logger.error(error, "editText error: ");
         next(error);
     }
 }

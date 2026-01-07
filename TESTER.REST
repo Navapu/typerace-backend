@@ -1,5 +1,5 @@
 @domain = http://localhost:3007
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY1ODk1OTIyLCJleHAiOjE3NjU4OTY4MjJ9.VvmfULN94tBD0aOQKO9NdsuE_6-inNlaKDv3yTUg8K8
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Mjk5MDRjNzkyZWM4MjNlNDE3OGM5NyIsImVtYWlsIjoicHJ1ZWJhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY3ODAyMjAyLCJleHAiOjE3Njc4MDMxMDJ9.bmses1YhBT_ei2KrCAq2VRSKIpBcJwxscboXvKimxAM
 Content-Type: application/json
 
 {
@@ -68,4 +68,14 @@ Authorization: Bearer {{token}}
 
 {
     "email": "prueba3@gmail.com"
+}
+
+###Edit Text
+PUT {{domain}}/texts/edit
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "textId" : "6926fa6f727549c276c5a06d",
+    "content": "Aprender a programar es como aprender un nuevo idioma: requiere práctica constante, paciencia y curiosidad. Cada error es una oportunidad para entender mejor cómo funciona el código"
 }
