@@ -98,17 +98,39 @@ export const softDeleteText = async(req, res, next) => {
         const text = await Text.findOneAndUpdate({ _id: textId, isActive: true },{ isActive: false },{ new: true });
 
         if(!text){
-            res.status(404);
-            return next(new Error("Text not found or already soft deleted"));
+            res.status(409);
+            return next(new Error("Text already soft deleted"));
         }
 
         return res.status(200).json({
-            msg: "Soft deleted text",
+            msg: "Text soft deleted",
             data: text,
             error: false
         });
     }catch(error){
-        logger.error(error, "deleteText error: ");
+        logger.error(error, "softDeleteText error: ");
+        next(error);
+    }
+}
+
+export const permanentDeleteText = async(req, res, next) => {
+    try{
+        const textId = req.text.id;
+        const text = await Text.findOneAndDelete({_id: textId, isActive: false})
+        
+        if(!text){
+            res.status(409);
+            return next(new Error("Text has to be soft deleted"))
+        }
+
+        const deletedGames = await Game.deleteMany({textId: textId});
+        return res.status(200).json({
+            msg: "Text permanently deleted",
+            data: {text, deletedGames: deletedGames.deletedCount},
+            error: false
+        });
+    }catch(error){
+        logger.error(error, "permanentDeleteText error: ");
         next(error);
     }
 }
