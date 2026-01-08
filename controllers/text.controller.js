@@ -91,9 +91,31 @@ export const editText = async(req, res, next) => {
     }
 }
 
+export const softDeleteText = async(req, res, next) => {
+    try{
+        const textId = req.text.id;
+
+        const text = await Text.findOneAndUpdate({ _id: textId, isActive: true },{ isActive: false },{ new: true });
+
+        if(!text){
+            res.status(404);
+            return next(new Error("Text not found or already soft deleted"));
+        }
+
+        return res.status(200).json({
+            msg: "Soft deleted text",
+            data: text,
+            error: false
+        });
+    }catch(error){
+        logger.error(error, "deleteText error: ");
+        next(error);
+    }
+}
+
 export const getAllTexts = async(req, res, next) => {
     try{
-        const filter = {};
+        const filter = {isActive: true};
         const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
         const page = Math.max(Number(req.query.page) || 1, 1);
         const skip = (page - 1) * limit;
@@ -131,7 +153,7 @@ export const getAllTexts = async(req, res, next) => {
 
 export const getRandomText = async(req, res, next) => {
     try{
-        const filter = {};
+        const filter = {isActive: true};
         filter.difficulty = req.query.difficulty || "medium";
         filter.language = req.query.language || "en";
         if(req.query.tags) filter.tags = { $in: req.query.tags.split(",") };

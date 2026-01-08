@@ -33,9 +33,9 @@ const textSchema = new mongoose.Schema({
         enum: ["coding", "random", "punctuations", "numbers"],
         default: []
     },
-    timesPlayed: {
-        type: Number,
-        default: 0
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {timestamps: true}, options)
 
