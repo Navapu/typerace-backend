@@ -6,5 +6,5 @@ export const connection = new IORedis({
     maxRetriesPerRequest: null,
     enableOfflineQueue: true
 })
-connection.on('connect', () => logger.info('Conectado a Redis'));
+connection.on('connect', () => logger.info('Connected to Redis'));
 connection.on('error', err => logger.error('Error Redis:', err));

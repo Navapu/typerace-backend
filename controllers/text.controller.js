@@ -148,14 +148,30 @@ export const getAllTexts = async(req, res, next) => {
 
         const totalTexts = await Text.countDocuments(filter);
 
-        const texts = await Text.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const texts = await Text.aggregate([ 
+            { $match: filter },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            { $lookup: {
+                from: "games",
+                localField: "_id",
+                foreignField: "textId", 
+                as: "games"
+                }
+            },
+            { $addFields: {
+                gamesCount:
+                { $size: "$games" }
+                }
+            },
+            { $project: { games: 0 }
+            }
+        ]);
 
         if(texts.length === 0){
-            return res.status(200).json({
-                msg: "Not have found texts",
-                data: [],
-                error: false
-            })
+            res.status(404);
+            return next(new Error("not have found texts"))
         }
         const totalPages = Math.ceil(totalTexts / limit);
         return res.status(200).json({
@@ -186,11 +202,8 @@ export const getRandomText = async(req, res, next) => {
         const texts = await Text.find(filter);
 
         if(texts.length === 0){
-            return res.status(200).json({
-                msg: "Not have found texts",
-                data: [],
-                error: false
-            })
+            res.status(404);
+            return next(new Error("not have found texts"))
         }
         
         const randomText = Math.floor(Math.random() * texts.length);
