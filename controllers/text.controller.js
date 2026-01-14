@@ -218,6 +218,28 @@ export const getRandomText = async(req, res, next) => {
         next(error);
     }
 }
+
+export const getSelectedText = async(req, res, next) => {
+    try{
+        const textId = req.text.id;
+
+        const text = await Text.findOne({ _id: textId, isActive: true }).select("title content difficulty language");
+
+        if(!text){
+            res.status(404);
+            return next(new Error("This text is soft deleted"))
+        }
+
+        res.status(200).json({
+            msg: "Obtained the selected text",
+            data: text,
+            error: false
+        })
+    }catch(error){
+        logger.error(error,"getSelectedText error: ");
+        next(error);
+    }
+}
 export const getMetricsText = async(req, res, next) => {
     try {
         const textId = req.text.id;

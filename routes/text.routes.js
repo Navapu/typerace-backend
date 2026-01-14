@@ -1,5 +1,5 @@
 import express from 'express';
-import { insertText, getAllTexts, getRandomText, getMetricsText, editText, softDeleteText, permanentDeleteText } from '../controllers/text.controller.js';
+import { insertText, getAllTexts, getRandomText, getMetricsText, editText, softDeleteText, permanentDeleteText, getSelectedText } from '../controllers/text.controller.js';
 import { validateTextId } from '../middleware/text.auth.middleware.js';
 import { auth, roleMiddleware } from '../middleware/auth.middleware.js';
 
@@ -10,6 +10,7 @@ router.put('/edit', auth, roleMiddleware('admin'), validateTextId, editText);
 router.delete('/delete', auth, roleMiddleware('admin'), validateTextId, softDeleteText);
 router.delete('/fulldelete', auth, roleMiddleware('admin'), validateTextId, permanentDeleteText);
 router.get('/', getAllTexts);
+router.get('/:textId/selected', validateTextId, getSelectedText);
 router.get('/random', getRandomText);
 router.get('/:textId/metrics', validateTextId, getMetricsText);
 export default router

@@ -79,3 +79,9 @@ Authorization: Bearer {{token}}
     "textId" : "6926fa6f727549c276c5a06d",
     "content": "Aprender a programar es como aprender un nuevo idioma: requiere práctica constante, paciencia y curiosidad. Cada error es una oportunidad para entender mejor cómo funciona el código"
 }
+
+###Get All texts
+GET {{domain}}/texts?page=2
+
+### GET Selected text
+GET {{domain}}/texts/69281adc727549c276c5a128/selected
