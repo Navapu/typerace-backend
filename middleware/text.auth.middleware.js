@@ -1,3 +1,4 @@
+import logger from "../config/logger.js";
 import { Text } from "../db/models/index.js";
 
 export const validateTextId = async(req, res, next) => {
@@ -18,6 +19,7 @@ export const validateTextId = async(req, res, next) => {
         req.text = text;
         next();
     }catch(error){
+        logger.error(error, "validateTextId error: ")
         next(error);
     }
 }
